@@ -1,0 +1,29 @@
+# Simulation Module
+
+Models a simplified server-side architecture to test queue performance under realistic workloads.
+
+## Architecture
+
+Clients (RequestGenerator)
+↓
+Ingress Queue (IQueue<Request>)
+↓
+WorkerPool → Workers (consume + process)
+
+
+## Files
+| File | Role |
+|------|------|
+| **Request.java** | Represents a synthetic server request with timing metadata. |
+| **RequestGenerator.java** | Simulates client threads generating bursty traffic. |
+| **Worker.java** | Consumes requests and performs synthetic work to simulate processing. |
+| **WorkerPool.java** | Manages worker threads. |
+| **ServerSimulator.java** | Coordinates clients, workers, and queues; reports throughput and latency. |
+
+## Purpose
+Connects micro-benchmarked data structures to a macro-level server simulation, enabling observation of how queue concurrency affects end-to-end system throughput.
+
+## Example
+```bash
+javac -d ../../bin *.java
+java -cp ../../bin simulation.ServerSimulator

@@ -1,0 +1,40 @@
+# Multicore Queue Evaluation
+
+**Goal:**  
+To evaluate the performance and scalability of lock-based and lock-free message queues when used in multicore worker-pool (server-side) architectures.
+
+This project models and benchmarks multiple queue synchronization strategies—from simple spin locks to advanced concurrent structures—and measures their impact on system throughput and latency.
+
+---
+
+## 📁 Project Structure
+
+- `src/core/`: Core interfaces and classes, including the `IQueue` interface and the `BenchmarkRunner`.
+- `src/lockbased/`: Lock-based queue implementations and lock mechanisms (e.g.,
+    TASLock, CLHLock).
+- `src/lockfree/`: Lock-free queue implementations (e.g., Michael-Scott Queue).
+- `src/simulation/`: Simulation framework for modeling server-client architectures.
+- `bin/`: Compiled bytecode output directory.
+- `README`: This documentation file.
+- `LICENSE`: Project license information.
+
+---
+
+## 🧩 How to Build & Run
+
+```bash
+# Compile all sources
+javac -d bin src/core/*.java src/lockbased/*.java src/simulation/*.java
+
+# Run micro-benchmark (core)
+java -cp bin core.BenchmarkRunner
+
+# Run full system simulation
+java -cp bin simulation.ServerSimulator
+
+# Alternatively, compile and run in one go:
+javac -d bin src/core/*.java src/lockbased/*.java
+java -cp bin core.BenchmarkRunner
+
+javac -d bin src/core/*.java src/lockbased/*.java src/simulation/*.java
+java -cp bin simulation.ServerSimulator

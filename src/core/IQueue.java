@@ -1,5 +1,7 @@
 package core;
 
-public class IQueue {
-    
+public interface IQueue<T> {
+    void enqueue(T item);
+    T dequeue();
 }
+
