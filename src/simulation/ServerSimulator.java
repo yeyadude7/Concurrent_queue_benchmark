@@ -2,43 +2,67 @@ package simulation;
 
 import core.IQueue;
 import core.MetricsRecorder;
-import lockbased.CLHLock;
-import lockbased.LockBasedQueue;
-import lockbased.SimpleLock;
+import queue.LockBasedQueue;
+import queue.MCSLockQueue;
 
 public class ServerSimulator {
+
     public static void main(String[] args) {
-        SimpleLock lock = new CLHLock();
-        IQueue<Request> ingress = new LockBasedQueue<>(lock);
-        MetricsRecorder metrics = new MetricsRecorder();
+        try {
+            // ======== Configuration ========
+            int clients = 4;               // number of producer threads
+            int workers = 4;               // number of consumer threads
+            int requestsPerClient = 10_000; // total = 40,000 requests
+            int maxClientDelayMicros = 50;  // simulate variable client arrival
+            int meanWorkerMicros = 1000;    // average synthetic work per request
 
-        int clients = 4;
-        int workers = 4;
-        int requestsPerClient = 50_000;
+            // ======== Initialization ========
+            IQueue<Request> ingress = new MCSLockQueue<>();
+            MetricsRecorder metrics = new MetricsRecorder();
 
-        // start workers
-        WorkerPool pool = new WorkerPool(workers, ingress, metrics);
-        pool.startAll();
+            // ======== Start workers FIRST ========
+            WorkerPool pool = new WorkerPool(workers, ingress, metrics, meanWorkerMicros);
+            pool.startAll();
 
-        // start clients
-        Thread[] generators = new Thread[clients];
-        for (int i = 0; i < clients; i++) {
-            generators[i] = new Thread(
-                new RequestGenerator(ingress, requestsPerClient, 50, metrics),
-                "client-" + i);
-            generators[i].start();
+            // ======== Start producers ========
+            Thread[] generators = new Thread[clients];
+            for (int i = 0; i < clients; i++) {
+                generators[i] = new Thread(
+                    new RequestGenerator(ingress, requestsPerClient, maxClientDelayMicros, metrics),
+                    "client-" + i
+                );
+                generators[i].start();
+            }
+
+            // ======== Timing & Synchronization ========
+            long start = System.nanoTime();
+
+            // Wait for all producers to finish sending requests
+            for (Thread t : generators) {
+                try { t.join(); } catch (InterruptedException ignored) {}
+            }
+
+            // ======== Enqueue poison pills (control messages) ========
+            for (int i = 0; i < workers; i++) {
+                long enqStart = System.nanoTime();
+                ingress.enqueue(new Request(-1, null)); // poison pill
+                long enqEnd = System.nanoTime();
+                metrics.recordControlEnqueue(enqEnd - enqStart);
+            }
+
+            // Wait for workers to finish
+            pool.joinAll();
+
+            long end = System.nanoTime();
+
+            // ======== Print final metrics ========
+            // Derive queue name dynamically (e.g., "MCSLockQueue" or "LockBasedQueue")
+            String queueName = ingress.getClass().getSimpleName();
+            metrics.printSummaryToFile(queueName, end - start);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        long start = System.nanoTime();
-        for (Thread t : generators) {
-            try { t.join(); } catch (InterruptedException ignored) {}
-        }
-
-        // send shutdown signals
-        for (int i = 0; i < workers; i++) ingress.enqueue(null);
-        pool.joinAll();
-        long end = System.nanoTime();
-
-        metrics.printSummary(end - start);
     }
 }

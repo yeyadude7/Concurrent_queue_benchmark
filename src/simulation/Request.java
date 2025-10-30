@@ -2,10 +2,9 @@ package simulation;
 
 public class Request {
     private final int id;
-    private final long createdAt;  // time of creation
-    private long enqueuedAt;       // time producer enqueued
-    private long dequeuedAt;       // time consumer dequeued
-
+    private final long createdAt;   // time of creation
+    private long enqueuedAt;        // time producer enqueued
+    private long dequeuedAt;        // time consumer dequeued
     private final String payload;
 
     public Request(int id, String payload) {
@@ -17,8 +16,14 @@ public class Request {
     public int getId() { return id; }
     public String getPayload() { return payload; }
 
-    public void markEnqueued() { this.enqueuedAt = System.nanoTime(); }
-    public void markDequeued() { this.dequeuedAt = System.nanoTime(); }
+    public void markDequeued() {
+        this.dequeuedAt = System.nanoTime();
+    }
+    
+    public void markEnqueued() {
+        if (this.enqueuedAt == 0)
+            this.enqueuedAt = System.nanoTime();
+    }
 
     public long getLatencyNanos() {
         if (enqueuedAt == 0 || dequeuedAt == 0) return 0;
