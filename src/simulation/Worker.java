@@ -21,21 +21,42 @@ public class Worker implements Runnable {
             long start = System.nanoTime();
             Request req = queue.dequeue();
             long end = System.nanoTime();
+
+            // Nothing available yet → back off and retry
+            if (req == null) {
+                try {
+                    Thread.sleep(0, 1000); // 1 µs pause to reduce contention
+                } catch (InterruptedException ignored) {}
+                continue;
+            }
+
+            // Poison pill → control dequeue, then exit thread
+            if (req.getPayload() == null) {
+                metrics.recordControlDequeue(end - start);
+                break;
+            }
+
+            // Normal dequeue event
             metrics.recordDequeue(end - start);
 
-            if (req == null) break;           // exit condition
+            // Mark processing completion and record latency
+            req.markDequeued();
+            long latency = req.getLatencyNanos();
+            if (latency <= 0) latency = 1; // avoid zero in stats
+            metrics.recordRequestLatency(latency);
 
-            req.markDequeued();               // mark processing finish
-            metrics.recordRequestLatency(req.getLatencyNanos());
-            busyWait(ThreadLocalRandom.current().nextInt(meanWorkMicros / 2, meanWorkMicros * 3 / 2));
+            // Simulate synthetic work (CPU-bound busy wait)
+            busyWait(ThreadLocalRandom.current().nextInt(
+                    meanWorkMicros / 2, meanWorkMicros * 3 / 2));
         }
-
     }
 
+    /** Simulate CPU-bound work proportional to meanWorkMicros. */
     private void busyWait(long micros) {
-        long target = micros * 1_000;  // µs → ns conversion only once
+        long target = micros * 1_000; // convert µs → ns
         long start = System.nanoTime();
-        while (System.nanoTime() - start < target) {}
+        while (System.nanoTime() - start < target) {
+            // spin
+        }
     }
-
 }

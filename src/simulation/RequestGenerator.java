@@ -21,7 +21,7 @@ public class RequestGenerator implements Runnable {
     public void run() {
         for (int i = 0; i < count; i++) {
             Request req = new Request(i, "req-" + i);
-            req.markEnqueued();               // sets enqueuedAt
+            req.markEnqueued();
             long start = System.nanoTime();
             ingressQueue.enqueue(req);
             long end = System.nanoTime();
