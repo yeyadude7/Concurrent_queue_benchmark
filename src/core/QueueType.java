@@ -2,7 +2,7 @@ package core;
 
 public enum QueueType {
     LOCK_BASED,
-    MCS_LOCK,
+    MS_LOCK,
     BATCH,
-    SERVER_BQ
+    BACKOFF_BQ
 }

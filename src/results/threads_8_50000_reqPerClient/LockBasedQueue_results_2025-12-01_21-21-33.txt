@@ -1,0 +1,7 @@
+==== Simulation Summary ====
+Total runtime: 402.25 ms
+Avg enqueue time: 5.93 µs
+Avg dequeue time: 3.69 µs
+Avg end-to-end request latency: 88.09 ms
+Throughput: 994402.01 reqs/sec
+Ops count  → Enq: 400000 (+4 control)  Deq: 404498 (+4 control)  Processed: 400000
