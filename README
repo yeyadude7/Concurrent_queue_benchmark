@@ -1,40 +1,53 @@
 # Multicore Queue Evaluation
 
-**Goal:**  
-To evaluate the performance and scalability of lock-based and lock-free message queues when used in multicore worker-pool (server-side) architectures.
-
-This project models and benchmarks multiple queue synchronization strategies—from simple spin locks to advanced concurrent structures—and measures their impact on system throughput and latency.
-
----
-
-## 📁 Project Structure
-
-- `src/core/`: Core interfaces and classes, including the `IQueue` interface and the `BenchmarkRunner`.
-- `src/lockbased/`: Lock-based queue implementations and lock mechanisms (e.g.,
-    TASLock, CLHLock).
-- `src/lockfree/`: Lock-free queue implementations (e.g., Michael-Scott Queue).
-- `src/simulation/`: Simulation framework for modeling server-client architectures.
-- `bin/`: Compiled bytecode output directory.
-- `README`: This documentation file.
-- `LICENSE`: Project license information.
+Goal:
+Evaluate the performance and scalability of lock-based, lock-free, and batching message queues in multicore, server-side producer–consumer architectures.
+The framework benchmarks four queue designs—LockBasedQueue, MSQueue, BatchQueue, and BackoffBatchQueue—across varying thread counts and request loads, measuring runtime, throughput, and latency.
 
 ---
 
-## 🧩 How to Build & Run
+Project Structure
 
-```bash
-# Compile all sources
-javac -d bin src/core/*.java src/lockbased/*.java src/simulation/*.java
+src/
+  core/               # Queue interface, benchmark runner, metrics
+  queue/              # Queue implementations (LockBased, MSQueue, BatchQueue, BackoffBatchQueue)
+  simulation/         # Producer/consumer threads and workload model
+  results/            # Auto-generated benchmark outputs
 
-# Run micro-benchmark (core)
-java -cp bin core.BenchmarkRunner
+  analysis/
+    analyze_results.py  # Aggregates results and produces plots
+  final_analysis_output/ # Generated CSVs and visualizations
 
-# Run full system simulation
-java -cp bin simulation.ServerSimulator
+bin/                  # Compiled bytecode
 
-# Alternatively, compile and run in one go:
-javac -d bin src/core/*.java src/lockbased/*.java
-java -cp bin core.BenchmarkRunner
+---
 
-javac -d bin src/core/*.java src/lockbased/*.java src/simulation/*.java
-java -cp bin simulation.ServerSimulator
+Build and Run
+
+Compile
+javac -d bin $(find src -name "*.java")
+
+Run full benchmark suite
+java -Xms2G -Xmx4G -cp bin core.AutoBenchmarkRunner
+
+Benchmark results are written to:
+src/results/threads_{THREADS}_{REQS}_reqPerClient/
+Each directory contains four result files—one for each queue design.
+
+---
+
+Run Analysis
+
+cd analysis
+python analyze_results.py
+
+This produces aggregated CSV files and plots under:
+final_analysis_output/
+
+---
+
+Summary
+
+This project provides a controlled environment for comparing contention behavior in several shared-memory queue algorithms.
+The benchmark and analysis pipeline can be extended to additional queue designs, workloads, or multicore architectures.
+
