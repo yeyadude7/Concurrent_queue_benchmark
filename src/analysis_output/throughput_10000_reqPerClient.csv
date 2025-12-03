@@ -1,0 +1,17 @@
+Threads,Queue,throughput
+4,BackoffBatchQueue,993803.63
+4,BatchQueue,640648.85
+4,LockBasedQueue,711238.82
+4,MSQueue,1454492.56
+8,BackoffBatchQueue,2165685.79
+8,BatchQueue,1642518.23
+8,LockBasedQueue,1665341.33
+8,MSQueue,3628085.01
+16,BackoffBatchQueue,1731168.94
+16,BatchQueue,1258455.26
+16,LockBasedQueue,2077204.53
+16,MSQueue,1947573.75
+32,BackoffBatchQueue,780367.32
+32,BatchQueue,538093.04
+32,LockBasedQueue,1831634.97
+32,MSQueue,961887.03

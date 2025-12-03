@@ -3,7 +3,9 @@ package simulation;
 import core.IQueue;
 import core.MetricsRecorder;
 import queue.LockBasedQueue;
-import queue.MCSLockQueue;
+import queue.BatchQueue;
+import queue.MSQueue;
+import queue.BackoffBatchQueue;
 
 public class ServerSimulator {
 
@@ -17,7 +19,7 @@ public class ServerSimulator {
             int meanWorkerMicros = 1000;    // average synthetic work per request
 
             // ======== Initialization ========
-            IQueue<Request> ingress = new MCSLockQueue<>();
+            IQueue<Request> ingress = new BackoffBatchQueue<>();
             MetricsRecorder metrics = new MetricsRecorder();
 
             // ======== Start workers FIRST ========

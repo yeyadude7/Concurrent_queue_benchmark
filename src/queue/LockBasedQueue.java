@@ -13,7 +13,7 @@ public class LockBasedQueue<T> implements IQueue<T> {
         lock.lock();
         try {
             queue.addLast(item);
-            System.out.println("[ENQ] Added: " + item);
+            // System.out.println("[ENQ] Added: " + item);
         } finally {
             lock.unlock();
         }
@@ -24,8 +24,8 @@ public class LockBasedQueue<T> implements IQueue<T> {
         lock.lock();
         try {
             T item = queue.isEmpty() ? null : queue.removeFirst();
-            if (item != null)
-                System.out.println("[DEQ] Got: " + item);
+            // if (item != null)
+            //     System.out.println("[DEQ] Got: " + item);
             return item;
         } finally {
             lock.unlock();

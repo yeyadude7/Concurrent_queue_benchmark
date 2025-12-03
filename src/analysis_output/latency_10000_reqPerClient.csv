@@ -1,0 +1,17 @@
+Threads,Queue,latency
+4,BackoffBatchQueue,110.72
+4,BatchQueue,162.11
+4,LockBasedQueue,926.43
+4,MSQueue,809.97
+8,BackoffBatchQueue,4.95
+8,BatchQueue,882.37
+8,LockBasedQueue,6830.0
+8,MSQueue,3730.0
+16,BackoffBatchQueue,29.23
+16,BatchQueue,1540.0
+16,LockBasedQueue,14470.0
+16,MSQueue,16.99
+32,BackoffBatchQueue,384.09
+32,BatchQueue,1.64
+32,LockBasedQueue,39100.0
+32,MSQueue,1.33

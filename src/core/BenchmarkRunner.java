@@ -1,15 +1,17 @@
 package core;
 
 import queue.*;
+import simulation.Consumer;
+import simulation.Producer;
 
 public class BenchmarkRunner {
 
     public static IQueue<Message> createQueue(QueueType type) {
         return switch (type) {
             case LOCK_BASED -> new LockBasedQueue();
-            case MCS_LOCK -> new MCSLockQueue();
+            case MS_LOCK -> new MSQueue();
             case BATCH -> new BatchQueue();
-            case SERVER_BQ -> new ServerAdaptedBQ();
+            case BACKOFF_BQ -> new BackoffBatchQueue();
         };
     }
 
@@ -22,7 +24,7 @@ public class BenchmarkRunner {
 
         int msgsPerConsumer = producers * messagesPerProducer / consumers;
         for (int i = 0; i < consumers; i++)
-            threads[producers + i] = new Thread(new Consumer(queue, msgsPerConsumer, metrics));
+            threads[producers + i] = new Thread(new Consumer(queue, metrics));
 
         long start = System.nanoTime();
         for (Thread t : threads) t.start();
@@ -34,7 +36,7 @@ public class BenchmarkRunner {
 
     
     public static void main(String[] args) {
-        QueueType type = QueueType.MCS_LOCK; // Change here
+        QueueType type = QueueType.BACKOFF_BQ; // Change here
         IQueue<Message> queue = createQueue(type);
 
         System.out.println("Running benchmark with: " + type);

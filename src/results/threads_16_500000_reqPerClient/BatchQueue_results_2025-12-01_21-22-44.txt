@@ -1,0 +1,7 @@
+==== Simulation Summary ====
+Total runtime: 4637.65 ms
+Avg enqueue time: 5.79 µs
+Avg dequeue time: 2.06 µs
+Avg end-to-end request latency: 3.29 ms
+Throughput: 1725010.06 reqs/sec
+Ops count  → Enq: 8000000 (+8 control)  Deq: 13997396 (+8 control)  Processed: 8000000

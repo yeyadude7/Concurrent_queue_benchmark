@@ -1,0 +1,17 @@
+Threads,Queue,runtime
+4,BackoffBatchQueue,40.25
+4,BatchQueue,62.44
+4,LockBasedQueue,56.24
+4,MSQueue,27.5
+8,BackoffBatchQueue,36.94
+8,BatchQueue,48.71
+8,LockBasedQueue,48.04
+8,MSQueue,22.05
+16,BackoffBatchQueue,92.42
+16,BatchQueue,127.14
+16,LockBasedQueue,77.03
+16,MSQueue,82.15
+32,BackoffBatchQueue,410.06
+32,BatchQueue,594.69
+32,LockBasedQueue,174.71
+32,MSQueue,332.68
